@@ -1,0 +1,4 @@
+python-binance //API to call binance // ok
+TA-Lib //tool to analyse data // ok piti lataa wheel file TA_Lib-0.4.21-cp39-cp39-win_amd64
+numpy //calculations // ok pip install numpy
+websocket_client //to read websockets from python // OK pip install websocket_client
