@@ -6,17 +6,26 @@ from binance.enums import *
 SOCKET = "wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
 
 RSI_PERIOD = 14
-RSI_OVERBOUGHT = 70
-RSI_OVERSOLD = 30
-TRADE_SYMBOL = 'ETHUSDT'
-TEADE_QUANTITY = 0.005
+RSI_OVERBOUGHT = 74
+RSI_OVERSOLD = 35
+TRADE_SYMBOL = 'LTOUSDT'
+TRADE_QUANTITY = 30
 
 closes = []
 in_position = False
 
 client = Client(config.API_KEY, config.API_SECRET) #removed , tld='us'
 
+def order(side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
+    try:
+        print("sending order")
+        order = client.create_order(symbol=symbol, side=side, type=order_type, quantity=quantity)
+        print(order)
+    except Exception as e:
+        print("an exception occured - {}".format(e))
+        return False
 
+    return True
 
 
 def on_open(ws):
@@ -55,6 +64,11 @@ def on_message(ws, message):
                 if in_position:
                     print ("Overbought, SELL SELL SELL!")
                     #put binance sell logick here
+                    order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
+                    if order_succeeded:
+                        in_position = False
+                else:
+                    print("It is overbought, but we don't own any. Nothing to do.")
 
             if last_rsi < RSI_OVERSOLD:
                 if in_position:
@@ -62,6 +76,9 @@ def on_message(ws, message):
                 else:
                     print ("Oversold, BUY BUY BUY!")
                     #put binance buy logick here
+                    order_succeeded = order(SIDE_BUY, TRADE_QUANTITY, TRADE_SYMBOL)
+                    if order_succeeded:
+                        in_position = True
 
 ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
 
