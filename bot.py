@@ -56,6 +56,7 @@ def on_message(ws, message):
         if len(closes) > RSI_PERIOD:
             np_closes = numpy.array(closes)
             rsi = talib.RSI(np_closes, RSI_PERIOD)
+        
             print("all rsi:s calculated so far")
             print(rsi)
             last_rsi = rsi[-1]
